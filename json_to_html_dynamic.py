@@ -608,7 +608,7 @@ def generate_dynamic_html(output_file="侯夫人與殺豬刀_thai.html"):
 
     <div class="container">
         <div id="chapterContent">
-            <div class="loading">กำลังโหลดบทที่ 1...</div>
+            <div class="loading">กำลังโหลด...</div>
         </div>
     </div>
 
@@ -633,6 +633,9 @@ def generate_dynamic_html(output_file="侯夫人與殺豬刀_thai.html"):
                 `<div class="loading">กำลังโหลดบทที่ ${{chapterNum}}...</div>`;
             
             currentChapter = chapterNum;
+            
+            // Save to localStorage
+            localStorage.setItem('lastReadChapter', chapterNum);
             
             // Use setTimeout to allow loading message to show
             setTimeout(() => {{
@@ -749,9 +752,19 @@ def generate_dynamic_html(output_file="侯夫人與殺豬刀_thai.html"):
                 tocList.appendChild(item);
             }});
             
-            // Load first chapter
+            // Load last read chapter or first chapter
+            let chapterToLoad = availableChapters[0];
+            const lastRead = localStorage.getItem('lastReadChapter');
+            if (lastRead) {{
+                const lastReadNum = parseInt(lastRead);
+                if (availableChapters.includes(lastReadNum)) {{
+                    chapterToLoad = lastReadNum;
+                    console.log('Resuming from last read chapter:', chapterToLoad);
+                }}
+            }}
+            
             if (availableChapters.length > 0) {{
-                loadChapter(availableChapters[0]);
+                loadChapter(chapterToLoad);
             }}
         }});
     </script>
