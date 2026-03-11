@@ -252,6 +252,7 @@ def generate_dynamic_html(output_file="侯夫人與殺豬刀_thai.html"):
         
         body {{
             font-family: 'Sarabun', 'Noto Sans Thai', sans-serif;
+            font-size: 18px;
             line-height: 1.9;
             color: #2c3e50;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -436,6 +437,8 @@ def generate_dynamic_html(output_file="侯夫人與殺豬刀_thai.html"):
             margin-bottom: 1.2em;
             text-align: justify;
             text-indent: 2em;
+            font-size: 1.05em;
+            line-height: 2;
         }}
         
         .back-to-top {{
@@ -755,16 +758,21 @@ def generate_dynamic_html(output_file="侯夫人與殺豬刀_thai.html"):
 </body>
 </html>"""
     
-    # Write HTML file
+    # Write HTML files
     with open(output_file, 'w', encoding='utf-8') as f:
+        f.write(html_content)
+    
+    # Also create chapters.html copy
+    with open('chapters.html', 'w', encoding='utf-8') as f:
         f.write(html_content)
     
     file_size_mb = len(html_content) / 1024 / 1024
     print(f"\n✓ Dynamic HTML created: {output_file}")
+    print(f"✓ Copy created: chapters.html")
     print(f"✓ Total chapters embedded: {len(chapters_data)}")
     print(f"✓ File size: {file_size_mb:.2f} MB")
     print(f"\nChapters load dynamically from embedded data")
-    print(f"✓ Done! Open {output_file} in your browser")
+    print(f"✓ Done! Open {output_file} or chapters.html in your browser")
     
     return True
 
