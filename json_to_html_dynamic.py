@@ -475,18 +475,113 @@ def generate_dynamic_html(output_file="侯夫人與殺豬刀_thai.html"):
         }}
         
         @media (max-width: 768px) {{
+            body {{
+                padding: 10px;
+                padding-top: 70px;
+            }}
+            
+            .container {{
+                max-width: 100%;
+                padding: 0;
+            }}
+            
             .chapter {{
-                padding: 25px;
-                margin: 20px 10px;
+                padding: 20px 15px;
+                margin: 15px 0;
+                border-radius: 8px;
+            }}
+            
+            .chapter-title {{
+                font-size: 1.2em;
+                padding: 10px 15px;
+                margin-bottom: 20px;
+            }}
+            
+            .chapter-content p {{
+                text-indent: 1.5em;
             }}
             
             .nav-bar {{
-                padding: 10px;
+                padding: 8px;
+                gap: 8px;
+            }}
+            
+            .nav-bar select {{
+                min-width: 120px;
+                padding: 8px 10px;
+                font-size: 0.95em;
+            }}
+            
+            .nav-btn {{
+                padding: 8px 15px;
+                font-size: 0.95em;
+            }}
+            
+            .toc-toggle {{
+                padding: 8px 15px;
+                font-size: 0.95em;
             }}
             
             .toc-sidebar {{
                 width: 280px;
                 left: -280px;
+            }}
+            
+            .back-to-top {{
+                width: 45px;
+                height: 45px;
+                bottom: 20px;
+                right: 20px;
+                font-size: 1.3em;
+            }}
+        }}
+        
+        @media (max-width: 480px) {{
+            body {{
+                padding: 5px;
+                padding-top: 65px;
+            }}
+            
+            .container {{
+                max-width: 100%;
+            }}
+            
+            .chapter {{
+                padding: 15px 10px;
+                margin: 10px 0;
+                border-radius: 6px;
+            }}
+            
+            .chapter-title {{
+                font-size: 1.1em;
+                padding: 8px 12px;
+                margin-bottom: 15px;
+            }}
+            
+            .nav-bar {{
+                padding: 6px;
+                gap: 6px;
+            }}
+            
+            .nav-bar select {{
+                min-width: 100px;
+                padding: 6px 8px;
+                font-size: 0.9em;
+            }}
+            
+            .nav-btn {{
+                padding: 6px 12px;
+                font-size: 0.9em;
+            }}
+            
+            .toc-toggle {{
+                padding: 6px 12px;
+                font-size: 0.9em;
+            }}
+            
+            .toc-sidebar {{
+                width: 260px;
+                left: -260px;
             }}
         }}
     </style>
