@@ -93,6 +93,6 @@ if __name__ == "__main__":
     # Replace "ท่านมาร์ควิส" with "ท่านโหว"
     replace_text_in_chapters(
         folder="translated_chapters",
-        old_text="ท่านหญิง",
-        new_text="นายหญิง"
+        old_text="เต็นท์",
+        new_text="กระโจม"
     )
