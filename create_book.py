@@ -291,6 +291,29 @@ def generate_html_reader(book_title, chapters_folder, output_html):
             transform: none;
         }}
         
+        .logout-btn {{
+            padding: 10px 20px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 1em;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }}
+        
+        .logout-btn:hover {{
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+        }}
+        
+        .logout-btn:active {{
+            transform: translateY(0);
+        }}
+        
         .toc-toggle {{
             padding: 10px 20px;
             background: #34495e;
@@ -484,11 +507,13 @@ def generate_html_reader(book_title, chapters_folder, output_html):
 <body>
     <div class="nav-bar">
         <button class="toc-toggle" onclick="toggleTOC()">☰ สารบัญ</button>
+        <a href="../index.html" class="nav-btn" style="text-decoration: none; display: inline-flex; align-items: center;">🏠 ห้องสมุด</a>
         <select id="chapterSelect" onchange="loadChapter(parseInt(this.value))">
             <option value="">-- เลือกบท --</option>
         </select>
         <button class="nav-btn" id="prevBtn" onclick="previousChapter()">← ก่อนหน้า</button>
         <button class="nav-btn" id="nextBtn" onclick="nextChapter()">ถัดไป →</button>
+        <button class="logout-btn" onclick="handleLogout()">🚪 ออกจากระบบ</button>
     </div>
 
     <div class="toc-sidebar" id="tocSidebar">
@@ -606,6 +631,16 @@ def generate_html_reader(book_title, chapters_folder, output_html):
                 backToTop.classList.remove('show');
             }}
         }});
+        
+        function handleLogout() {{
+            if (confirm('คุณต้องการออกจากระบบหรือไม่?')) {{
+                localStorage.removeItem('libraryLoggedIn');
+                localStorage.removeItem('libraryUsername');
+                sessionStorage.removeItem('libraryLoggedIn');
+                sessionStorage.removeItem('libraryUsername');
+                window.location.href = '../login.html';
+            }}
+        }}
 
         document.addEventListener('DOMContentLoaded', function() {{
             const select = document.getElementById('chapterSelect');
