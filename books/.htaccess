@@ -1,0 +1,8 @@
+# Disable directory browsing
+Options -Indexes
+
+# Prevent access to certain file types
+<FilesMatch "\.(json|txt|md)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
