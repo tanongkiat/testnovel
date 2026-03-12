@@ -240,9 +240,6 @@
     </style>
 </head>
 <body>
-    <div class="user-info" id="userInfo"></div>
-    <button class="logout-button" onclick="handleLogout()">ออกจากระบบ</button>
-    
     <div class="container">
         <div class="header">
             <h1>📚 ห้องสมุดนิยายแปล</h1>
@@ -264,12 +261,24 @@
                 <a href="侯夫人與殺豬刀/chapters.html" class="read-button">อ่านเลย</a>
             </div>
         </div>
+
+        <div class="book-card">
+            <div class="book-cover">
+                <img src="殘王爆寵囂張醫妃/title.jpg" alt="殘王爆寵囂張醫妃" class="book-cover-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="book-cover-placeholder" style="display:none;">
+                    <span class="book-icon">📖</span>
+                </div>
+            </div>
+            <div class="book-info">
+                <h2 class="book-title-chinese">殘王爆寵囂張醫妃</h2>
+                <h3 class="book-title-thai">ไม่มีชื่อภาษาไทย</h3>
+                <p class="book-chapters">75 ตอน</p>
+                <a href="殘王爆寵囂張醫妃/chapters.html" class="read-button">อ่านเลย</a>
+            </div>
+        </div>
         </div>
         
         <div class="footer">
-            <p>© 2026 Thai Novel Translation Library | สร้างด้วย ❤️</p>
-        </div>
-    </div>
     
     <script>
         // Display username
@@ -289,5 +298,8 @@
             }
         }
     </script>
+            <p>© 2026 Thai Novel Translation Library | สร้างด้วย ❤️</p>
+        </div>
+    </div>
 </body>
 </html>
