@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เข้าสู่ระบบ - ห้องสมุดนิยายแปล</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Sarabun', 'Noto Sans Thai', sans-serif;
+            font-size: 18px;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .login-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+        
+        .login-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .login-subtitle {
+            font-size: 1em;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 1em;
+            font-family: 'Sarabun', sans-serif;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        .form-input:focus {
+            border-color: #667eea;
+        }
+        
+        .login-button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            font-family: 'Sarabun', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .login-button:active {
+            transform: translateY(0);
+        }
+        
+        .error-message {
+            background: #ffe6e6;
+            color: #e74c3c;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 0.95em;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9em;
+            color: #546e7a;
+            margin-top: 15px;
+        }
+        
+        .remember-me input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .footer-note {
+            margin-top: 30px;
+            font-size: 0.85em;
+            color: #95a5a6;
+            padding-top: 20px;
+            border-top: 1px solid #ecf0f1;
+        }
+        
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 20px;
+            }
+            
+            .login-title {
+                font-size: 1.5em;
+            }
+            
+            .login-icon {
+                font-size: 3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-icon">📚</div>
+        <h1 class="login-title">ห้องสมุดนิยายแปล</h1>
+        <p class="login-subtitle">เข้าสู่ระบบเพื่ออ่านนิยาย</p>
+        
+        <div class="error-message" id="errorMessage">
+            รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง
+        </div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label class="form-label" for="username">ชื่อผู้ใช้</label>
+                <input 
+                    type="text" 
+                    id="username" 
+                    class="form-input" 
+                    placeholder="กรอกชื่อผู้ใช้"
+                    required
+                    autocomplete="username"
+                >
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="password">รหัสผ่าน</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    class="form-input" 
+                    placeholder="กรอกรหัสผ่าน"
+                    required
+                    autocomplete="current-password"
+                >
+            </div>
+            
+            <label class="remember-me">
+                <input type="checkbox" id="rememberMe" checked>
+                <span>จำฉันไว้ในระบบ</span>
+            </label>
+            
+            <button type="submit" class="login-button">เข้าสู่ระบบ</button>
+        </form>
+        
+        <div class="footer-note">
+            ชื่อผู้ใช้: <strong>admin</strong> | รหัสผ่าน: <strong>301020</strong>
+        </div>
+    </div>
+
+    <script>
+        // Check if already logged in
+        if (localStorage.getItem('libraryLoggedIn') === 'true') {
+            window.location.href = 'index.html';
+        }
+
+        // SHA-256 hash function using Web Crypto API
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex;
+        }
+
+        // Password hashes (SHA-256)
+        // To generate a new hash: open browser console and run: sha256('yourpassword').then(hash => console.log(hash))
+        const validPasswordHashes = {
+            'admin': 'ceed1e0925520c4e8fdbf77a7e1c67203c5793f9598c34d2b64d7a688c784d8a'  ,
+            'boyd': 'ceed1e0925520c4e8fdbf77a7e1c67203c5793f9598c34d2b64d7a688c784d8a' 
+        };
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // Hash the input password
+            const passwordHash = await sha256(password);
+            
+            // Debug output
+            console.log('Username:', username);
+            console.log('Password entered:', password);
+            console.log('Generated hash:', passwordHash);
+            console.log('Expected hash:', validPasswordHashes[username]);
+            console.log('Match:', validPasswordHashes[username] === passwordHash);
+            
+            // Check if username exists and password hash matches
+            if (validPasswordHashes[username] && validPasswordHashes[username] === passwordHash) {
+                // Successful login
+                console.log('Login successful!');
+                if (rememberMe) {
+                    localStorage.setItem('libraryLoggedIn', 'true');
+                    localStorage.setItem('libraryUsername', username);
+                } else {
+                    sessionStorage.setItem('libraryLoggedIn', 'true');
+                    sessionStorage.setItem('libraryUsername', username);
+                }
+                
+                // Redirect to main page
+                window.location.href = 'index.html';
+            } else {
+                // Failed login
+                console.log('Login failed!');
+                errorMessage.classList.add('show');
+                document.getElementById('password').value = '';
+                document.getElementById('password').focus();
+                
+                // Hide error after 3 seconds
+                setTimeout(() => {
+                    errorMessage.classList.remove('show');
+                }, 3000);
+            }
+        }
+        
+        // Attach event listener to form
+        document.getElementById('loginForm').addEventListener('submit', handleLogin);
+        
+        // Clear error message when user starts typing
+        document.getElementById('password').addEventListener('input', function() {
+            document.getElementById('errorMessage').classList.remove('show');
+        });
+
+        // Expose sha256 function to console for generating new password hashes
+        window.sha256 = sha256;
+    </script>
+</body>
+</html>

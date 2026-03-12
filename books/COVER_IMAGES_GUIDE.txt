@@ -1,0 +1,41 @@
+📚 Book Cover Images - Quick Guide
+===================================
+
+HOW TO ADD COVER IMAGES:
+------------------------
+
+1. For each book folder (e.g., 侯夫人與殺豬刀), add a file named:
+   title.jpg
+
+   Example structure:
+   books/
+   ├── index.html
+   ├── 侯夫人與殺豬刀/
+   │   ├── title.jpg          ← Add your cover image here
+   │   ├── chapters.html
+   │   └── translated_chapters/
+   └── [other books]/
+       └── title.jpg          ← Add cover for each book
+
+2. After adding title.jpg files, regenerate the index:
+   python generate_book_index.py
+
+3. The index page will automatically use your cover images
+
+IMAGE SPECIFICATIONS:
+--------------------
+- File format: JPEG (.jpg)
+- Aspect ratio: 2:3 (portrait orientation)
+- Recommended size: 600x900 pixels or larger
+- File size: Under 500KB recommended
+
+FALLBACK:
+---------
+If title.jpg doesn't exist, a book icon placeholder (📖) will be displayed automatically.
+
+EXAMPLE:
+--------
+To add a cover for "侯夫人與殺豬刀":
+- Save your image as: books/侯夫人與殺豬刀/title.jpg
+- Run: python generate_book_index.py
+- Open: books/index.html to see the result
