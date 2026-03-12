@@ -1,34 +1,53 @@
 #!/usr/bin/env python3
 """
-Replace text in all translated chapters
+Replace text in all translated chapters using a dictionary of replacements
 """
 
 import json
 import os
 
 
-def replace_in_translated(data, old_text, new_text):
+def replace_in_translated(data, replacements_dict):
     """
-    Replace text in the translated field, handling nested list structure
+    Replace text in the translated field using a dictionary, handling nested list structure
+    
+    Args:
+        data: The data structure to process
+        replacements_dict: Dictionary of {old_text: new_text} pairs
     """
     if isinstance(data, list):
         # Handle nested list structure [[translated_text, source_text]]
         if len(data) > 0 and isinstance(data[0], list) and len(data[0]) > 0:
-            data[0][0] = data[0][0].replace(old_text, new_text)
+            for old_text, new_text in replacements_dict.items():
+                data[0][0] = data[0][0].replace(old_text, new_text)
         elif len(data) > 0 and isinstance(data[0], str):
-            data[0] = data[0].replace(old_text, new_text)
+            for old_text, new_text in replacements_dict.items():
+                data[0] = data[0].replace(old_text, new_text)
     elif isinstance(data, str):
-        data = data.replace(old_text, new_text)
+        for old_text, new_text in replacements_dict.items():
+            data = data.replace(old_text, new_text)
     
     return data
 
 
-def replace_text_in_chapters(folder="translated_chapters", old_text="ท่านมาร์ควิสอู๋อัน", new_text="ท่านอู๋อันโหว"):
+def replace_text_in_chapters(book_name, replacements_dict, books_dir="books"):
     """
-    Replace text in all translated chapter files
+    Replace text in all translated chapter files using a dictionary
+    
+    Args:
+        book_name: Name of the book folder (e.g., "侯夫人與殺豬刀")
+        replacements_dict: Dictionary of {old_text: new_text} pairs
+        books_dir: Base directory containing book folders (default: "books")
     """
-    print(f"Replacing '{old_text}' with '{new_text}' in all chapters...")
-    print(f"Folder: {folder}/\n")
+    folder = os.path.join(books_dir, book_name, "translated_chapters")
+    
+    print(f"Applying replacements to: {book_name}")
+    print(f"Folder: {folder}/")
+    print(f"Number of replacements: {len(replacements_dict)}\n")
+    
+    for old, new in replacements_dict.items():
+        print(f"  '{old}' → '{new}'")
+    print()
     
     if not os.path.exists(folder):
         print(f"Error: Folder '{folder}' not found!")
@@ -41,7 +60,7 @@ def replace_text_in_chapters(folder="translated_chapters", old_text="ท่า�
         print(f"Error: No chapter files found in {folder}/")
         return False
     
-    print(f"Found {len(files)} chapter files")
+    print(f"Found {len(files)} chapter files\n")
     
     total_replacements = 0
     updated_chapters = 0
@@ -54,17 +73,17 @@ def replace_text_in_chapters(folder="translated_chapters", old_text="ท่า�
             with open(filepath, 'r', encoding='utf-8') as f:
                 data = json.load(f)
             
-            # Convert to string to count occurrences
+            # Count occurrences before replacement
             original_str = json.dumps(data['translated'], ensure_ascii=False)
-            count_before = original_str.count(old_text)
+            count_before = sum(original_str.count(old_text) for old_text in replacements_dict.keys())
             
             if count_before > 0:
                 # Replace in the translated field
-                data['translated'] = replace_in_translated(data['translated'], old_text, new_text)
+                data['translated'] = replace_in_translated(data['translated'], replacements_dict)
                 
                 # Verify replacement
                 new_str = json.dumps(data['translated'], ensure_ascii=False)
-                count_after = new_str.count(old_text)
+                count_after = sum(new_str.count(old_text) for old_text in replacements_dict.keys())
                 replacements = count_before - count_after
                 
                 # Save the file
@@ -90,9 +109,23 @@ def replace_text_in_chapters(folder="translated_chapters", old_text="ท่า�
 
 
 if __name__ == "__main__":
-    # Replace "ท่านมาร์ควิส" with "ท่านโหว"
+    # Define your replacements dictionary
+    replacements = {
+        "มาร์ควิส": "ท่านโหว",
+        "ข้าราชบริพาร": "ข้ารับใช้",
+        "มาดาม": "ฮูหยิน"
+        
+        # Add more replacements as needed:
+        # "old_text_1": "new_text_1",
+        # "old_text_2": "new_text_2",
+    }
+    
+    # Specify the book name (folder name in books/)
+    book_name = "殘王爆寵囂張醫妃"
+    
+    # Run the replacement
     replace_text_in_chapters(
-        folder="translated_chapters",
-        old_text="นางสาว",
-        new_text="แม่นาง"
+        book_name=book_name,
+        replacements_dict=replacements,
+        books_dir="books"
     )
