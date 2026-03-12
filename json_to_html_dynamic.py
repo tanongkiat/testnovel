@@ -829,6 +829,14 @@ if __name__ == "__main__":
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{book_title} - Thai Translation</title>
+    <script>
+        // Check if user is logged in
+        const isLoggedIn = localStorage.getItem('libraryLoggedIn') === 'true' || 
+                          sessionStorage.getItem('libraryLoggedIn') === 'true';
+        if (!isLoggedIn) {{
+            window.location.href = '../login.html';
+        }}
+    </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap');
         
@@ -931,6 +939,16 @@ if __name__ == "__main__":
             background: #c0392b;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+        }}
+        
+        .user-info {{
+            padding: 8px 15px;
+            background: rgba(102, 126, 234, 0.1);
+            color: #2c3e50;
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-left: auto;
         }}
         
         .container {{
@@ -1087,6 +1105,7 @@ if __name__ == "__main__":
         </select>
         <button class="nav-btn" id="prevBtn" onclick="previousChapter()">← ก่อนหน้า</button>
         <button class="nav-btn" id="nextBtn" onclick="nextChapter()">ถัดไป →</button>
+        <div class="user-info" id="userInfo"></div>
         <button class="logout-btn" onclick="handleLogout()">🚪 ออกจากระบบ</button>
     </div>
 

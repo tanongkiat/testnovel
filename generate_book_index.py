@@ -103,15 +103,17 @@ def generate_html_template(books_metadata):
         
         card_html = f'''
         <div class="book-card">
-            <div class="book-cover">
-                {cover_html}
-            </div>
-            <div class="book-info">
-                <h2 class="book-title-chinese">{book['chinese_title']}</h2>
-                <h3 class="book-title-thai">{thai_title}</h3>
-                <p class="book-chapters">{chapter_text}</p>
-                <a href="{book['folder_name']}/chapters.html" class="read-button">อ่านเลย</a>
-            </div>
+            <a href="{book['folder_name']}/chapters.html" class="book-link">
+                <div class="book-cover">
+                    {cover_html}
+                </div>
+                <div class="book-info">
+                    <h2 class="book-title-chinese">{book['chinese_title']}</h2>
+                    <h3 class="book-title-thai">{thai_title}</h3>
+                    <p class="book-chapters">{chapter_text}</p>
+                </div>
+            </a>
+            <a href="{book['folder_name']}/chapters.html" class="read-button">อ่านเลย</a>
         </div>'''
         book_cards.append(card_html)
     
@@ -149,6 +151,44 @@ def generate_html_template(books_metadata):
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
             padding: 20px;
+            padding-top: 80px;
+        }}
+        
+        .header-bar {{
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }}
+        
+        .header-bar h2 {{
+            font-size: 1.3em;
+            color: #667eea;
+            margin: 0;
+            font-weight: 700;
+        }}
+        
+        .library-title {{
+            text-decoration: none;
+            color: #667eea;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }}
+        
+        .library-title:hover {{
+            color: #764ba2;
+            transform: translateY(-1px);
         }}
         
         .container {{
@@ -204,6 +244,24 @@ def generate_html_template(books_metadata):
             box-shadow: 0 8px 30px rgba(102, 126, 234, 0.3);
         }}
         
+        .book-link {{
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            cursor: pointer;
+        }}
+        
+        .book-link:hover .book-title-chinese {{
+            color: #667eea;
+        }}
+        
+        .book-link:hover .book-cover-image {{
+            transform: scale(1.02);
+        }}
+        
         .book-cover {{
             width: 100%;
             max-width: 180px;
@@ -216,6 +274,7 @@ def generate_html_template(books_metadata):
             object-fit: cover;
             border-radius: 8px;
             border: 2px solid #667eea;
+            transition: transform 0.2s;
         }}
         
         .book-cover-placeholder {{
@@ -244,6 +303,7 @@ def generate_html_template(books_metadata):
             margin-bottom: 8px;
             word-wrap: break-word;
             line-height: 1.3;
+            transition: color 0.2s;
         }}
         
         .book-title-thai {{
@@ -271,6 +331,7 @@ def generate_html_template(books_metadata):
             font-weight: 600;
             font-size: 0.9em;
             transition: all 0.2s;
+            margin-top: 10px;
         }}
         
         .read-button:hover {{
@@ -289,44 +350,58 @@ def generate_html_template(books_metadata):
             font-size: 0.9em;
         }}
         
+        .user-info {{
+            padding: 8px 15px;
+            background: rgba(102, 126, 234, 0.1);
+            color: #2c3e50;
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-left: auto;
+        }}
+        
         .logout-button {{
-            position: fixed;
-            top: 20px;
-            right: 20px;
             padding: 10px 20px;
-            background: rgba(255, 255, 255, 0.95);
-            color: #667eea;
-            border: 2px solid #667eea;
-            border-radius: 8px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 6px;
             font-weight: 600;
             font-family: 'Sarabun', sans-serif;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
             font-size: 0.9em;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }}
         
         .logout-button:hover {{
-            background: #667eea;
-            color: white;
+            background: #c0392b;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }}
-        
-        .user-info {{
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            padding: 10px 15px;
-            background: rgba(255, 255, 255, 0.95);
-            color: #2c3e50;
-            border-radius: 8px;
-            font-size: 0.9em;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
         }}
         
         @media (max-width: 768px) {{
+            body {{
+                padding-top: 70px;
+            }}
+            
+            .header-bar {{
+                padding: 10px 15px;
+            }}
+            
+            .header-bar h2 {{
+                font-size: 1.1em;
+            }}
+            
+            .user-info {{
+                padding: 6px 10px;
+                font-size: 0.8em;
+            }}
+            
+            .logout-button {{
+                padding: 6px 12px;
+                font-size: 0.8em;
+            }}
+            
             .header h1 {{
                 font-size: 2em;
             }}
@@ -339,27 +414,18 @@ def generate_html_template(books_metadata):
                 grid-template-columns: 1fr;
                 gap: 20px;
             }}
-            
-            .logout-button {{
-                top: 10px;
-                right: 10px;
-                user-info" id="userInfo"></div>
-    <button class="logout-button" onclick="handleLogout()">ออกจากระบบ</button>
-    
-    <div class="padding: 8px 15px;
-                font-size: 0.85em;
-            }}
-            
-            .user-info {{
-                top: 10px;
-                left: 10px;
-                padding: 8px 12px;
-                font-size: 0.85em;
-            }}
         }}
     </style>
 </head>
 <body>
+    <div class="header-bar">
+        <a href="index.html" class="library-title">
+            <h2>📚 ห้องสมุดนิยายแปล</h2>
+        </a>
+        <div class="user-info" id="userInfo"></div>
+        <button class="logout-button" onclick="handleLogout()">🚪 ออกจากระบบ</button>
+    </div>
+    
     <div class="container">
         <div class="header">
             <h1>📚 ห้องสมุดนิยายแปล</h1>
