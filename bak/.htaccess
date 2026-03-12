@@ -1,0 +1,3 @@
+# Deny all access to bak folder
+Order deny,allow
+Deny from all
