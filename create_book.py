@@ -73,8 +73,8 @@ def translate_html(html_text, api_key):
     }
     
     payload = [
-        [html_text, "zh-CN", "th", True],
-        [1]
+        [[html_text], "zh-TW", "th"],
+        "te_lib"
     ]
     
     response = requests.post(url, headers=headers, json=payload, timeout=30)
