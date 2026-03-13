@@ -335,18 +335,18 @@ def generate_dynamic_html(output_file="侯夫人與殺豬刀_thai.html"):
             color: #2c3e50;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             padding: 20px;
-            padding-top: 80px;
+            padding-bottom: 100px;
         }}
         
         .nav-bar {{
             position: fixed;
-            top: 0;
+            bottom: 0;
             left: 0;
             right: 0;
             background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(10px);
             padding: 15px 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
             z-index: 1000;
             display: flex;
             align-items: center;
@@ -441,7 +441,7 @@ def generate_dynamic_html(output_file="侯夫人與殺豬刀_thai.html"):
             overflow-y: auto;
             transition: left 0.3s ease;
             z-index: 999;
-            padding: 80px 20px 20px 20px;
+            padding: 20px 20px 120px 20px;
         }}
         
         .toc-sidebar.open {{
@@ -521,7 +521,7 @@ def generate_dynamic_html(output_file="侯夫人與殺豬刀_thai.html"):
         
         .back-to-top {{
             position: fixed;
-            bottom: 30px;
+            bottom: 110px;
             right: 30px;
             width: 50px;
             height: 50px;
@@ -669,12 +669,12 @@ def generate_dynamic_html(output_file="侯夫人與殺豬刀_thai.html"):
 </head>
 <body>
     <div class="nav-bar">
-        <button class="toc-toggle" onclick="toggleTOC()">☰ สารบัญ</button>
+        <button class="toc-toggle" onclick="toggleTOC()" title="สารบัญ">☰</button>
         <select id="chapterSelect" onchange="loadChapter(parseInt(this.value))">
             <option value="">-- เลือกบท --</option>
         </select>
-        <button class="nav-btn" id="prevBtn" onclick="previousChapter()">← ก่อนหน้า</button>
-        <button class="nav-btn" id="nextBtn" onclick="nextChapter()">ถัดไป →</button>
+        <button class="nav-btn" id="prevBtn" onclick="previousChapter()" title="ก่อนหน้า">←</button>
+        <button class="nav-btn" id="nextBtn" onclick="nextChapter()" title="ถัดไป">→</button>
     </div>
 
     <div class="toc-sidebar" id="tocSidebar">
@@ -929,18 +929,18 @@ if __name__ == "__main__":
             color: #2c3e50;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             padding: 20px;
-            padding-top: 80px;
+            padding-bottom: 100px;
         }}
         
         .nav-bar {{
             position: fixed;
-            top: 0;
+            bottom: 0;
             left: 0;
             right: 0;
             background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(10px);
             padding: 15px 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
             z-index: 1000;
             display: flex;
             align-items: center;
@@ -1077,7 +1077,7 @@ if __name__ == "__main__":
             overflow-y: auto;
             transition: left 0.3s ease;
             z-index: 999;
-            padding: 80px 20px 20px 20px;
+            padding: 20px 20px 120px 20px;
         }}
         
         .toc-sidebar.open {{
@@ -1125,7 +1125,7 @@ if __name__ == "__main__":
         
         .back-to-top {{
             position: fixed;
-            bottom: 30px;
+            bottom: 110px;
             right: 30px;
             width: 50px;
             height: 50px;
@@ -1174,15 +1174,15 @@ if __name__ == "__main__":
 </head>
 <body>
     <div class="nav-bar">
-        <button class="toc-toggle" onclick="toggleTOC()">☰ สารบัญ</button>
-        <a href="../index.html" class="nav-btn" style="text-decoration: none; display: inline-flex; align-items: center;">🏠 ห้องสมุด</a>
+        <button class="toc-toggle" onclick="toggleTOC()" title="สารบัญ">☰</button>
+        <a href="../index.html" class="nav-btn" style="text-decoration: none; display: inline-flex; align-items: center;" title="ห้องสมุด">🏠</a>
         <select id="chapterSelect" onchange="loadChapter(parseInt(this.value))">
             <option value="">-- เลือกบท --</option>
         </select>
-        <button class="nav-btn" id="prevBtn" onclick="previousChapter()">← ก่อนหน้า</button>
-        <button class="nav-btn" id="nextBtn" onclick="nextChapter()">ถัดไป →</button>
+        <button class="nav-btn" id="prevBtn" onclick="previousChapter()" title="ก่อนหน้า">←</button>
+        <button class="nav-btn" id="nextBtn" onclick="nextChapter()" title="ถัดไป">→</button>
         <div class="user-info" id="userInfo"></div>
-        <button class="logout-btn" onclick="handleLogout()">🚪 ออกจากระบบ</button>
+        <button class="logout-btn" onclick="handleLogout()" title="ออกจากระบบ">🚪</button>
     </div>
 
     <div class="toc-sidebar" id="tocSidebar">
@@ -1435,18 +1435,18 @@ if __name__ == "__main__":
             color: #2c3e50;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             padding: 20px;
-            padding-top: 80px;
+            padding-bottom: 100px;
         }}
         
         .nav-bar {{
             position: fixed;
-            top: 0;
+            bottom: 0;
             left: 0;
             right: 0;
             background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(10px);
             padding: 15px 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
             z-index: 1000;
             display: flex;
             align-items: center;
@@ -1587,7 +1587,7 @@ if __name__ == "__main__":
             overflow-y: auto;
             transition: left 0.3s ease;
             z-index: 999;
-            padding: 80px 20px 20px 20px;
+            padding: 20px 20px 120px 20px;
         }}
         
         .toc-sidebar.open {{
@@ -1667,7 +1667,7 @@ if __name__ == "__main__":
         
         .back-to-top {{
             position: fixed;
-            bottom: 30px;
+            bottom: 110px;
             right: 30px;
             width: 50px;
             height: 50px;
@@ -1788,15 +1788,15 @@ if __name__ == "__main__":
 </head>
 <body>
     <div class="nav-bar">
-        <button class="toc-toggle" onclick="toggleTOC()">☰ สารบัญ</button>
-        <a href="../index.html" class="back-library">← กลับห้องสมุด</a>
+        <button class="toc-toggle" onclick="toggleTOC()" title="สารบัญ">☰</button>
+        <a href="../index.html" class="back-library" title="กลับห้องสมุด">🏠</a>
         <select id="chapterSelect" onchange="loadChapter(parseInt(this.value))">
             <option value="">-- เลือกบท --</option>
         </select>
-        <button class="nav-btn" id="prevBtn" onclick="previousChapter()">← ก่อนหน้า</button>
-        <button class="nav-btn" id="nextBtn" onclick="nextChapter()">ถัดไป →</button>
+        <button class="nav-btn" id="prevBtn" onclick="previousChapter()" title="ก่อนหน้า">←</button>
+        <button class="nav-btn" id="nextBtn" onclick="nextChapter()" title="ถัดไป">→</button>
         <div class="user-info" id="userInfo"></div>
-        <button class="logout-button" onclick="handleLogout()">🚪 ออกจากระบบ</button>
+        <button class="logout-button" onclick="handleLogout()" title="ออกจากระบบ">🚪</button>
     </div>
 
     <div class="toc-sidebar" id="tocSidebar">
