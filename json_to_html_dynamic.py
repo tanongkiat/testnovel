@@ -6,6 +6,84 @@ Generate HTML with dynamic chapter loading (data embedded in HTML)
 import json
 import os
 import re
+import sys
+
+
+def list_books(books_dir="books"):
+    """
+    List all available books in the books directory
+    
+    Args:
+        books_dir: Base directory containing book folders (default: "books")
+    
+    Returns:
+        List of book folder names
+    """
+    if not os.path.exists(books_dir):
+        print(f"Error: Books directory '{books_dir}' not found!")
+        return []
+    
+    books = []
+    for item in os.listdir(books_dir):
+        item_path = os.path.join(books_dir, item)
+        if os.path.isdir(item_path):
+            # Check if it has a translated_chapters folder
+            chapters_path = os.path.join(item_path, "translated_chapters")
+            if os.path.exists(chapters_path):
+                books.append(item)
+    
+    return sorted(books)
+
+
+def select_book(books_dir="books"):
+    """
+    Display available books and let user select one
+    
+    Args:
+        books_dir: Base directory containing book folders (default: "books")
+    
+    Returns:
+        Selected book name or None if cancelled
+    """
+    books = list_books(books_dir)
+    
+    if not books:
+        print("No books with translated chapters found!")
+        return None
+    
+    print("=" * 60)
+    print("Available Books:")
+    print("=" * 60)
+    for i, book in enumerate(books, 1):
+        # Count chapters
+        chapters_path = os.path.join(books_dir, book, "translated_chapters")
+        chapter_files = [f for f in os.listdir(chapters_path) 
+                        if f.startswith('chapter_') and f.endswith('.json')]
+        print(f"{i}. {book} ({len(chapter_files)} chapters)")
+    
+    print("\n0. Cancel")
+    print("=" * 60)
+    
+    while True:
+        try:
+            choice = input("\nSelect a book (enter number): ").strip()
+            choice_num = int(choice)
+            
+            if choice_num == 0:
+                print("Cancelled.")
+                return None
+            
+            if 1 <= choice_num <= len(books):
+                selected = books[choice_num - 1]
+                print(f"\n✓ Selected: {selected}\n")
+                return selected
+            else:
+                print(f"Invalid choice. Please enter a number between 0 and {len(books)}.")
+        except ValueError:
+            print("Invalid input. Please enter a number.")
+        except KeyboardInterrupt:
+            print("\n\nCancelled.")
+            return None
 
 
 def extract_translated_text(translated_data):
@@ -791,8 +869,6 @@ def generate_dynamic_html(output_file="侯夫人與殺豬刀_thai.html"):
 
 
 if __name__ == "__main__":
-    import sys
-    
     # Check for command-line arguments
     if len(sys.argv) > 1:
         chapters_folder = sys.argv[1]
@@ -1280,11 +1356,649 @@ if __name__ == "__main__":
         with open(output_file, 'w', encoding='utf-8') as f:
             f.write(html_content)
         
+        # Also create chapters.html in the same directory
+        output_dir = os.path.dirname(output_file)
+        chapters_html_path = os.path.join(output_dir, "chapters.html")
+        with open(chapters_html_path, 'w', encoding='utf-8') as f:
+            f.write(html_content)
+        
         file_size_mb = len(html_content) / 1024 / 1024
         print(f"\n✓ HTML created: {output_file}")
+        print(f"✓ Copy created: {chapters_html_path}")
         print(f"✓ File size: {file_size_mb:.2f} MB")
         print(f"✓ Chapters: {len(chapters_data)}")
-        print(f"\nTo view: Open {output_file} in your browser")
+        print(f"\nTo view: Open {output_file} or {chapters_html_path} in your browser")
     else:
-        # Default behavior - use current directory's translated_chapters
-        generate_dynamic_html()
+        # Interactive mode - select book from directory
+        book_name = select_book(books_dir="books")
+        
+        if not book_name:
+            print("No book selected. Exiting.")
+            sys.exit(0)
+        
+        # Set paths based on selected book
+        chapters_folder = os.path.join("books", book_name, "translated_chapters")
+        output_file = os.path.join("books", book_name, f"{book_name}_thai.html")
+        
+        print(f"Generating HTML from: {chapters_folder}")
+        print(f"Output file: {output_file}")
+        
+        # Load chapters from specified folder
+        if not os.path.exists(chapters_folder):
+            print(f"Error: Folder '{chapters_folder}' not found!")
+            sys.exit(1)
+        
+        chapters_data = load_all_chapters(chapters_folder)
+        
+        if not chapters_data:
+            print(f"Error: No translated chapters found in {chapters_folder}")
+            sys.exit(1)
+        
+        print(f"\nFound {len(chapters_data)} translated chapters")
+        print("Embedding chapter data into HTML...")
+        
+        # Convert chapters data to JavaScript object
+        chapters_js = json.dumps(chapters_data, ensure_ascii=False)
+        available_chapters = sorted(chapters_data.keys())
+        available_chapters_js = json.dumps(available_chapters)
+        
+        # Use book_name as title
+        book_title = book_name
+        
+        html_content = f"""<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{book_title} - Thai Translation</title>
+    <script>
+        // Check if user is logged in
+        const isLoggedIn = localStorage.getItem('libraryLoggedIn') === 'true' || 
+                          sessionStorage.getItem('libraryLoggedIn') === 'true';
+        if (!isLoggedIn) {{
+            window.location.href = '../login.html';
+        }}
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap');
+        
+        * {{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }}
+        
+        body {{
+            font-family: 'Sarabun', 'Noto Sans Thai', sans-serif;
+            font-size: 18px;
+            line-height: 1.9;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            padding-top: 80px;
+        }}
+        
+        .nav-bar {{
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }}
+        
+        .user-info {{
+            padding: 8px 15px;
+            background: rgba(102, 126, 234, 0.1);
+            color: #2c3e50;
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-left: auto;
+        }}
+        
+        .logout-button {{
+            padding: 10px 20px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-family: 'Sarabun', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9em;
+        }}
+        
+        .logout-button:hover {{
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+        }}
+        
+        .back-library {{
+            padding: 10px 20px;
+            background: #34495e;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 1em;
+            transition: all 0.2s;
+            display: inline-block;
+        }}
+        
+        .back-library:hover {{
+            background: #2c3e50;
+            transform: translateY(-2px);
+        }}
+        
+        .nav-bar select {{
+            flex: 1;
+            min-width: 200px;
+            max-width: 400px;
+            padding: 10px 15px;
+            font-size: 1em;
+            font-family: 'Sarabun', sans-serif;
+            border: 2px solid #667eea;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            outline: none;
+        }}
+        
+        .nav-bar select:focus {{
+            border-color: #764ba2;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }}
+        
+        .nav-btn {{
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 1em;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }}
+        
+        .nav-btn:hover {{
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }}
+        
+        .nav-btn:active {{
+            transform: translateY(0);
+        }}
+        
+        .nav-btn:disabled {{
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }}
+        
+        .toc-toggle {{
+            padding: 10px 20px;
+            background: #34495e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 1em;
+            font-weight: 600;
+        }}
+        
+        .loading {{
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2em;
+            color: #667eea;
+        }}
+        
+        .error {{
+            text-align: center;
+            padding: 40px;
+            font-size: 1.1em;
+            color: #e74c3c;
+            background: #ffe6e6;
+            border-radius: 8px;
+            margin: 20px;
+        }}
+        
+        .toc-sidebar {{
+            position: fixed;
+            left: -350px;
+            top: 0;
+            bottom: 0;
+            width: 350px;
+            background: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            transition: left 0.3s ease;
+            z-index: 999;
+            padding: 80px 20px 20px 20px;
+        }}
+        
+        .toc-sidebar.open {{
+            left: 0;
+        }}
+        
+        .toc-overlay {{
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 998;
+        }}
+        
+        .toc-overlay.open {{
+            opacity: 1;
+            pointer-events: all;
+        }}
+        
+        .toc-item {{
+            display: block;
+            padding: 12px 15px;
+            color: #2c3e50;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 5px;
+            transition: all 0.2s;
+        }}
+        
+        .toc-item:hover {{
+            background: #f0f0f0;
+            transform: translateX(5px);
+        }}
+        
+        .toc-item.active {{
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }}
+        
+        .container {{
+            max-width: 900px;
+            margin: 0 auto;
+        }}
+        
+        .chapter {{
+            background: white;
+            padding: 40px;
+            margin: 30px 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }}
+        
+        .chapter-title {{
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 25px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }}
+        
+        .chapter-content p {{
+            margin-bottom: 1.2em;
+            text-align: justify;
+            text-indent: 2em;
+            font-size: 1.05em;
+            line-height: 2;
+        }}
+        
+        .back-to-top {{
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5em;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s, transform 0.2s;
+            z-index: 500;
+        }}
+        
+        .back-to-top.show {{
+            opacity: 1;
+            pointer-events: all;
+        }}
+        
+        .back-to-top:hover {{
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+        }}
+        
+        .chapter-info {{
+            text-align: center;
+            color: #7f8c8d;
+            margin-top: 20px;
+            font-size: 0.9em;
+        }}
+        
+        @media (max-width: 768px) {{
+            body {{
+                padding: 10px;
+                padding-top: 70px;
+            }}
+            
+            .container {{
+                max-width: 100%;
+                padding: 0;
+            }}
+            
+            .chapter {{
+                padding: 20px 15px;
+                margin: 15px 0;
+                border-radius: 8px;
+            }}
+            
+            .chapter-title {{
+                font-size: 1.2em;
+                padding: 10px 15px;
+                margin-bottom: 20px;
+            }}
+            
+            .chapter-content p {{
+                text-indent: 1.5em;
+            }}
+            
+            .nav-bar {{
+                padding: 8px;
+                gap: 8px;
+            }}
+            
+            .user-info {{
+                padding: 6px 10px;
+                font-size: 0.8em;
+            }}
+            
+            .logout-button {{
+                padding: 6px 10px;
+                font-size: 0.8em;
+            }}
+            
+            .nav-bar select {{
+                min-width: 120px;
+                padding: 8px 10px;
+                font-size: 0.95em;
+            }}
+            
+            .nav-btn {{
+                padding: 8px 15px;
+                font-size: 0.95em;
+            }}
+            
+            .toc-toggle {{
+                padding: 8px 15px;
+                font-size: 0.95em;
+            }}
+            
+            .toc-sidebar {{
+                width: 280px;
+                left: -280px;
+            }}
+            
+            .back-to-top {{
+                width: 45px;
+                height: 45px;
+                bottom: 20px;
+                right: 20px;
+                font-size: 1.3em;
+            }}
+        }}
+        
+        @media (max-width: 480px) {{
+            body {{
+                padding: 5px;
+                padding-top: 65px;
+            }}
+            
+            .toc-sidebar {{
+                width: 260px;
+                left: -260px;
+            }}
+        }}
+    </style>
+</head>
+<body>
+    <div class="nav-bar">
+        <button class="toc-toggle" onclick="toggleTOC()">☰ สารบัญ</button>
+        <a href="../index.html" class="back-library">← กลับห้องสมุด</a>
+        <select id="chapterSelect" onchange="loadChapter(parseInt(this.value))">
+            <option value="">-- เลือกบท --</option>
+        </select>
+        <button class="nav-btn" id="prevBtn" onclick="previousChapter()">← ก่อนหน้า</button>
+        <button class="nav-btn" id="nextBtn" onclick="nextChapter()">ถัดไป →</button>
+        <div class="user-info" id="userInfo"></div>
+        <button class="logout-button" onclick="handleLogout()">🚪 ออกจากระบบ</button>
+    </div>
+
+    <div class="toc-sidebar" id="tocSidebar">
+        <h3 style="margin-bottom: 20px; color: #667eea;">สารบัญ</h3>
+        <div id="tocList"></div>
+    </div>
+
+    <div class="toc-overlay" id="tocOverlay" onclick="closeTOC()"></div>
+
+    <div class="container">
+        <div id="chapterContent">
+            <div class="loading">กำลังโหลด...</div>
+        </div>
+    </div>
+
+    <button class="back-to-top" id="backToTop" onclick="scrollToTop()">↑</button>
+
+    <script>
+        // Embedded chapter data
+        const chaptersData = {chapters_js};
+        const availableChapters = {available_chapters_js};
+        let currentChapter = null;
+        
+        // Display username
+        const username = localStorage.getItem('libraryUsername') || 
+                        sessionStorage.getItem('libraryUsername') || 
+                        'ผู้ใช้';
+        document.getElementById('userInfo').textContent = '👤 ' + username;
+        
+        // Handle logout
+        function handleLogout() {{
+            if (confirm('คุณต้องการออกจากระบบหรือไม่?')) {{
+                localStorage.removeItem('libraryLoggedIn');
+                localStorage.removeItem('libraryUsername');
+                sessionStorage.removeItem('libraryLoggedIn');
+                sessionStorage.removeItem('libraryUsername');
+                window.location.href = '../login.html';
+            }}
+        }}
+        
+        // Load chapter from embedded data
+        function loadChapter(chapterNum) {{
+            if (!availableChapters.includes(chapterNum)) {{
+                document.getElementById('chapterContent').innerHTML = 
+                    `<div class="error">ไม่พบบทที่ ${{chapterNum}}</div>`;
+                return;
+            }}
+            
+            // Show loading briefly for UX
+            document.getElementById('chapterContent').innerHTML = 
+                `<div class="loading">กำลังโหลดบทที่ ${{chapterNum}}...</div>`;
+            
+            currentChapter = chapterNum;
+            
+            // Save to localStorage with book-specific key
+            localStorage.setItem('lastReadChapter_{book_title}', chapterNum);
+            
+            // Use setTimeout to allow loading message to show
+            setTimeout(() => {{
+                const data = chaptersData[chapterNum];
+                if (data) {{
+                    displayChapter(data);
+                }} else {{
+                    document.getElementById('chapterContent').innerHTML = 
+                        `<div class="error">ไม่พบข้อมูลบทที่ ${{chapterNum}}</div>`;
+                }}
+            }}, 100);
+        }}
+
+        // Display chapter content (already formatted)
+        function displayChapter(data) {{
+            const html = `
+                <div class="chapter">
+                    <div class="chapter-title">${{data.chapter_title}}</div>
+                    <div class="chapter-content">
+                        ${{data.content}}
+                    </div>
+                    <div class="chapter-info">
+                        บทที่ ${{data.chapter_number}} / ${{availableChapters.length}}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('chapterContent').innerHTML = html;
+            window.scrollTo({{ top: 0, behavior: 'smooth' }});
+            updateNavigation();
+        }}
+
+        // Navigation functions
+        function previousChapter() {{
+            const currentIndex = availableChapters.indexOf(currentChapter);
+            if (currentIndex > 0) {{
+                loadChapter(availableChapters[currentIndex - 1]);
+            }}
+        }}
+
+        function nextChapter() {{
+            const currentIndex = availableChapters.indexOf(currentChapter);
+            if (currentIndex < availableChapters.length - 1) {{
+                loadChapter(availableChapters[currentIndex + 1]);
+            }}
+        }}
+
+        function updateNavigation() {{
+            const currentIndex = availableChapters.indexOf(currentChapter);
+            document.getElementById('prevBtn').disabled = currentIndex <= 0;
+            document.getElementById('nextBtn').disabled = currentIndex >= availableChapters.length - 1;
+            document.getElementById('chapterSelect').value = currentChapter;
+            updateActiveTOCItem(currentChapter);
+        }}
+
+        // TOC functions
+        function toggleTOC() {{
+            document.getElementById('tocSidebar').classList.toggle('open');
+            document.getElementById('tocOverlay').classList.toggle('open');
+        }}
+
+        function closeTOC() {{
+            document.getElementById('tocSidebar').classList.remove('open');
+            document.getElementById('tocOverlay').classList.remove('open');
+        }}
+
+        function updateActiveTOCItem(chapterNum) {{
+            document.querySelectorAll('.toc-item').forEach(item => {{
+                item.classList.remove('active');
+                if (parseInt(item.dataset.chapter) === chapterNum) {{
+                    item.classList.add('active');
+                }}
+            }});
+        }}
+
+        // Back to top
+        function scrollToTop() {{
+            window.scrollTo({{ top: 0, behavior: 'smooth' }});
+        }}
+
+        window.addEventListener('scroll', function() {{
+            const backToTop = document.getElementById('backToTop');
+            if (window.pageYOffset > 300) {{
+                backToTop.classList.add('show');
+            }} else {{
+                backToTop.classList.remove('show');
+            }}
+        }});
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {{
+            // Populate chapter selector
+            const select = document.getElementById('chapterSelect');
+            availableChapters.forEach(ch => {{
+                const option = document.createElement('option');
+                option.value = ch;
+                option.textContent = `บทที่ ${{ch}}`;
+                select.appendChild(option);
+            }});
+            
+            // Populate TOC
+            const tocList = document.getElementById('tocList');
+            availableChapters.forEach(ch => {{
+                const item = document.createElement('a');
+                item.href = '#';
+                item.className = 'toc-item';
+                item.dataset.chapter = ch;
+                item.textContent = `บทที่ ${{ch}}`;
+                item.onclick = (e) => {{
+                    e.preventDefault();
+                    loadChapter(ch);
+                    closeTOC();
+                }};
+                tocList.appendChild(item);
+            }});
+            
+            // Load last read chapter or first chapter
+            let chapterToLoad = availableChapters[0];
+            const lastRead = localStorage.getItem('lastReadChapter_{book_title}');
+            if (lastRead) {{
+                const lastReadNum = parseInt(lastRead);
+                if (availableChapters.includes(lastReadNum)) {{
+                    chapterToLoad = lastReadNum;
+                }}
+            }}
+            
+            if (availableChapters.length > 0) {{
+                loadChapter(chapterToLoad);
+            }}
+        }});
+    </script>
+</body>
+</html>"""
+        
+        # Write HTML file
+        with open(output_file, 'w', encoding='utf-8') as f:
+            f.write(html_content)
+        
+        # Also create chapters.html in the book directory
+        chapters_html_path = os.path.join("books", book_name, "chapters.html")
+        with open(chapters_html_path, 'w', encoding='utf-8') as f:
+            f.write(html_content)
+        
+        file_size_mb = len(html_content) / 1024 / 1024
+        print(f"\n✓ HTML created: {output_file}")
+        print(f"✓ Copy created: {chapters_html_path}")
+        print(f"✓ File size: {file_size_mb:.2f} MB")
+        print(f"✓ Chapters: {len(chapters_data)}")
+        print(f"\nTo view: Open {output_file} or {chapters_html_path} in your browser")

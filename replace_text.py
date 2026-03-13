@@ -5,6 +5,84 @@ Replace text in all translated chapters using a dictionary of replacements
 
 import json
 import os
+import sys
+
+
+def list_books(books_dir="books"):
+    """
+    List all available books in the books directory
+    
+    Args:
+        books_dir: Base directory containing book folders (default: "books")
+    
+    Returns:
+        List of book folder names
+    """
+    if not os.path.exists(books_dir):
+        print(f"Error: Books directory '{books_dir}' not found!")
+        return []
+    
+    books = []
+    for item in os.listdir(books_dir):
+        item_path = os.path.join(books_dir, item)
+        if os.path.isdir(item_path):
+            # Check if it has a translated_chapters folder
+            chapters_path = os.path.join(item_path, "translated_chapters")
+            if os.path.exists(chapters_path):
+                books.append(item)
+    
+    return sorted(books)
+
+
+def select_book(books_dir="books"):
+    """
+    Display available books and let user select one
+    
+    Args:
+        books_dir: Base directory containing book folders (default: "books")
+    
+    Returns:
+        Selected book name or None if cancelled
+    """
+    books = list_books(books_dir)
+    
+    if not books:
+        print("No books with translated chapters found!")
+        return None
+    
+    print("=" * 60)
+    print("Available Books:")
+    print("=" * 60)
+    for i, book in enumerate(books, 1):
+        # Count chapters
+        chapters_path = os.path.join(books_dir, book, "translated_chapters")
+        chapter_files = [f for f in os.listdir(chapters_path) 
+                        if f.startswith('chapter_') and f.endswith('.json')]
+        print(f"{i}. {book} ({len(chapter_files)} chapters)")
+    
+    print("\n0. Cancel")
+    print("=" * 60)
+    
+    while True:
+        try:
+            choice = input("\nSelect a book (enter number): ").strip()
+            choice_num = int(choice)
+            
+            if choice_num == 0:
+                print("Cancelled.")
+                return None
+            
+            if 1 <= choice_num <= len(books):
+                selected = books[choice_num - 1]
+                print(f"\n✓ Selected: {selected}\n")
+                return selected
+            else:
+                print(f"Invalid choice. Please enter a number between 0 and {len(books)}.")
+        except ValueError:
+            print("Invalid input. Please enter a number.")
+        except KeyboardInterrupt:
+            print("\n\nCancelled.")
+            return None
 
 
 def replace_in_translated(data, replacements_dict):
@@ -113,19 +191,25 @@ if __name__ == "__main__":
     replacements = {
         "มาร์ควิส": "ท่านโหว",
         "ข้าราชบริพาร": "ข้ารับใช้",
-        "มาดาม": "ฮูหยิน"
+        "มาดาม": "ฮูหยิน",
+        "ประตูเมริเดียน": "ประตูอู่เหมิน",
+        "บัญชีเสือ": "บัญชีลับ",
         
         # Add more replacements as needed:
         # "old_text_1": "new_text_1",
         # "old_text_2": "new_text_2",
     }
     
-    # Specify the book name (folder name in books/)
-    book_name = "殘王爆寵囂張醫妃"
+    # Select book from directory
+    book_name = select_book(books_dir="books")
     
-    # Run the replacement
-    replace_text_in_chapters(
-        book_name=book_name,
-        replacements_dict=replacements,
-        books_dir="books"
-    )
+    if book_name:
+        # Run the replacement
+        replace_text_in_chapters(
+            book_name=book_name,
+            replacements_dict=replacements,
+            books_dir="books"
+        )
+    else:
+        print("No book selected. Exiting.")
+        sys.exit(0)
