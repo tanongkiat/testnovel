@@ -8,6 +8,112 @@ import os
 import sys
 
 
+# Define replacement dictionaries for each novel type
+NOVEL_TYPE_REPLACEMENTS = {
+    "historical": {
+        "มาร์ควิส": "ท่านโหว",
+        "ข้าราชบริพาร": "ข้ารับใช้",
+        "มาดาม": "ฮูหยิน",
+        "ประตูเมริเดียน": "ประตูอู่เหมิน",
+        "บัญชีเสือ": "บัญชีลับ",
+        "หว่านเชื้อ": "สืบทายาท",
+        "แค่เลือดนิดหน่อย": "แค่เลือดออกนิดเดียว",
+        "กลับไปคนเดิม": "กลับไปเป็นเหมือนเดิม",
+    },
+    "fantasy": {
+        "มาร์ควิส": "ท่านโหว",
+        "ข้าราชบริพาร": "ข้ารับใช้",
+        "มาดาม": "ฮูหยิน",
+        "พลังวิเศษ": "พลังเวทมนตร์",
+        "อาณาจักร": "อาณาจักร",
+    },
+    "romance": {
+        "มาร์ควิส": "ท่านโหว",
+        "ข้าราชบริพาร": "ข้ารับใช้",
+        "มาดาม": "ฮูหยิน",
+        "คุณชาย": "ท่านชาย",
+        "คุณหญิง": "ท่านหญิง",
+    },
+    "modern": {
+        "บริษัท": "บริษัท",
+        "ซีอีโอ": "ซีอีโอ",
+        "ประธาน": "ประธาน",
+    },
+    "xianxia": {
+        "การเพาะปลูก": "การบ่มเพาะวิชา",
+        "ดินแดนอมตะ": "ดินแดนเซียน",
+        "พลังเวท": "พลังชี",
+        "ระดับ": "ขั้น",
+    },
+    "wuxia": {
+        "มาร์ควิส": "ท่านโหว",
+        "ข้าราชบริพาร": "ข้ารับใช้",
+        "ศิลปะการต่อสู้": "กังฟู",
+        "พลังภายใน": "กำลังภายใน",
+        "นักรบ": "นักดาบ",
+    },
+    "custom": {
+        # Empty - user can add their own
+    }
+}
+
+
+def select_novel_type():
+    """
+    Display available novel types and let user select one
+    
+    Returns:
+        Selected novel type key or None if cancelled
+    """
+    types = list(NOVEL_TYPE_REPLACEMENTS.keys())
+    
+    print("=" * 60)
+    print("Select Novel Type:")
+    print("=" * 60)
+    print("1. Historical (หมู่บ้านโบราณ - ราชสำนัก)")
+    print("2. Fantasy (แฟนตาซี)")
+    print("3. Romance (โรแมนซ์)")
+    print("4. Modern (ร่วมสมัย)")
+    print("5. Xianxia (เซียนเซี่ย - ภูตผีปีศาจ)")
+    print("6. Wuxia (อู๋เซี่ย - ยุทธ์)")
+    print("7. Custom (กำหนดเอง)")
+    print("\n0. Cancel")
+    print("=" * 60)
+    
+    type_map = {
+        1: "historical",
+        2: "fantasy",
+        3: "romance",
+        4: "modern",
+        5: "xianxia",
+        6: "wuxia",
+        7: "custom"
+    }
+    
+    while True:
+        try:
+            choice = input("\nSelect novel type (enter number): ").strip()
+            choice_num = int(choice)
+            
+            if choice_num == 0:
+                print("Cancelled.")
+                return None
+            
+            if choice_num in type_map:
+                selected = type_map[choice_num]
+                replacements = NOVEL_TYPE_REPLACEMENTS[selected]
+                print(f"\n✓ Selected: {selected}")
+                print(f"  Replacements defined: {len(replacements)}\n")
+                return selected
+            else:
+                print(f"Invalid choice. Please enter a number between 0 and 7.")
+        except ValueError:
+            print("Invalid input. Please enter a number.")
+        except KeyboardInterrupt:
+            print("\n\nCancelled.")
+            return None
+
+
 def list_books(books_dir="books"):
     """
     List all available books in the books directory
@@ -187,20 +293,60 @@ def replace_text_in_chapters(book_name, replacements_dict, books_dir="books"):
 
 
 if __name__ == "__main__":
-    # Define your replacements dictionary
-    replacements = {
-        "มาร์ควิส": "ท่านโหว",
-        "ข้าราชบริพาร": "ข้ารับใช้",
-        "มาดาม": "ฮูหยิน",
-        "ประตูเมริเดียน": "ประตูอู่เหมิน",
-        "บัญชีเสือ": "บัญชีลับ",
-        
-        # Add more replacements as needed:
-        # "old_text_1": "new_text_1",
-        # "old_text_2": "new_text_2",
-    }
+    print("""
+╔═══════════════════════════════════════════════════════════╗
+║         Text Replacement Tool for Translations          ║
+║                                                         ║
+║  Replace terms in translated chapters based on         ║
+║  novel type (Historical, Fantasy, Romance, etc.)        ║
+╚═══════════════════════════════════════════════════════════╝
+""")
     
-    # Select book from directory
+    # Step 1: Select novel type
+    novel_type = select_novel_type()
+    
+    if not novel_type:
+        print("No novel type selected. Exiting.")
+        sys.exit(0)
+    
+    # Get replacements for selected type
+    replacements = NOVEL_TYPE_REPLACEMENTS[novel_type]
+    
+    # If custom type, allow user to add custom replacements
+    if novel_type == "custom":
+        print("\nNo predefined replacements for custom type.")
+        print("You can add your custom replacements by editing the NOVEL_TYPE_REPLACEMENTS['custom'] dictionary in the script.")
+        add_custom = input("\nDo you want to add custom replacements now? (y/n): ").strip().lower()
+        
+        if add_custom == 'y':
+            print("\nEnter replacements (format: old_text => new_text)")
+            print("Type 'done' when finished")
+            
+            while True:
+                entry = input("Replacement: ").strip()
+                if entry.lower() == 'done':
+                    break
+                
+                if '=>' in entry:
+                    old_text, new_text = entry.split('=>', 1)
+                    old_text = old_text.strip()
+                    new_text = new_text.strip()
+                    
+                    if old_text and new_text:
+                        replacements[old_text] = new_text
+                        print(f"  ✓ Added: '{old_text}' → '{new_text}'")
+                    else:
+                        print("  ✗ Invalid format. Please use: old_text => new_text")
+                else:
+                    print("  ✗ Invalid format. Please use: old_text => new_text")
+        
+        if not replacements:
+            print("\nNo replacements defined. Exiting.")
+            sys.exit(0)
+    
+    print(f"\nUsing {len(replacements)} replacement(s) for '{novel_type}' type\n")
+    
+    # Step 2: Select book from directory
     book_name = select_book(books_dir="books")
     
     if book_name:
